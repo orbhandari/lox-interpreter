@@ -25,9 +25,9 @@ enum class TokenType {
     _equal,
     _equal_equal,
     _greater,
-    _greater_than,
+    _greater_equal,
     _less,
-    _less_than,
+    _less_equal,
 
     // literals
     _identifier,
@@ -49,6 +49,7 @@ enum class TokenType {
     _true,
     _false,
     _while,
+    _var,
 
     _eof,
 };
@@ -112,14 +113,14 @@ inline std::ostream& operator<<(std::ostream& out, const TokenType& token) {
     case _greater:
         out << "greater";
         break;
-    case _greater_than:
-        out << "greater_than";
+    case _greater_equal:
+        out << "greater_equal";
         break;
     case _less:
         out << "less";
         break;
-    case _less_than:
-        out << "less_than";
+    case _less_equal:
+        out << "less_equal";
         break;
 
     // literals

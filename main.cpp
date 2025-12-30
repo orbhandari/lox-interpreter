@@ -18,8 +18,6 @@ int main(int argc, char* argv[]) {
         runPrompt();
     }
 
-    // std::flush(std::cout);
-    // std::cout.flush();
     return 0;
 }
 
@@ -28,7 +26,7 @@ void run(std::string source) {
     std::vector<Token> tokens{lexer.lexTokens()};
 
     for (const auto& token : tokens) {
-        // std::println("{}", token);
+        std::cout << token << "\n";
     }
 }
 
@@ -44,7 +42,7 @@ void runFile(const std::string& path) {
 void runPrompt() {
     std::string line{};
     while (true) {
-        std::print("< ");
+        std::print("> ");
         std::getline(std::cin, line);
         if (line.empty()) {
             break;

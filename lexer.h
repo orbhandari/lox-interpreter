@@ -1,8 +1,9 @@
+#include "error.h"
 #include "token.h"
 #include "tokentypes.h"
 #include <string>
+#include <unordered_map>
 #include <vector>
-#include "error.h"
 
 class Lexer {
     using enum TokenType;
@@ -13,14 +14,20 @@ class Lexer {
     Lexer(const Lexer&) = default;
     Lexer& operator=(Lexer&&) = default;
     Lexer& operator=(const Lexer&) = default;
-    ~Lexer();
+    ~Lexer() = default;
 
     auto lexTokens() -> std::vector<Token>;
     auto lexToken() -> void;
     auto isAtEnd() -> bool;
-    auto consume() -> char;
+    auto advance() -> char;
     auto addToken(TokenType token) -> void;
     auto addToken(TokenType token, Type literal) -> void;
+    auto addStringToken() -> void;
+    auto addNumberToken() -> void;
+    auto addIdentifierOrKeywordToken() -> void;
+    auto match(char expected) -> bool;
+    auto peek() -> char;
+    auto peekTwice() -> char;
 
   private:
     int m_start{0};
@@ -29,4 +36,6 @@ class Lexer {
     std::string m_source;
     std::vector<Token> m_tokens;
     ErrorReporter m_errorReporter;
+
+    static const std::unordered_map<std::string, TokenType> reservedKeywordsMap;
 };

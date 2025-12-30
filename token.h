@@ -5,9 +5,6 @@
 #include "types.h"
 #include <string>
 
-/*
- * Lexer will wrap lexemes and emit as tokens. *
- */
 class Token {
   private:
     TokenType m_type{};
@@ -22,6 +19,7 @@ class Token {
     friend std::ostream& operator<<(std::ostream& out, const Token& token) {
         out << token.m_type << " " << token.m_lexeme << " ";
         if (token.m_literal.has_value()) {
+            // TODO: note that if its a double, then we may need to set precision here
             std::visit([&out](const auto& v) { out << v; }, token.m_literal.value());
         } else {
             out << "Nil";

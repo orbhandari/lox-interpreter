@@ -78,6 +78,20 @@ auto Lexer::lexToken() -> void {
             while (peek() != '\n' && !isAtEnd()) {
                 advance();
             }
+        } else if (match('*')) {
+            while (!isAtEnd() && !(peek() == '*' && peekTwice() == '/')) {
+                if (peek() == '\n') {
+                    ++m_line;
+                }
+                advance();
+            }
+
+            if (isAtEnd()) {
+                m_errorReporter.error(m_line, "Unterminated multiline comment.");
+                return;
+            }
+
+            advance(), advance();
         } else {
             addToken(_slash);
         }
@@ -162,6 +176,7 @@ auto Lexer::addIdentifierOrKeywordToken() -> void {
     }
 }
 
+// Implicitly advances as well!
 auto Lexer::match(char expected) -> bool {
 
     if (isAtEnd())

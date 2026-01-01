@@ -1,0 +1,30 @@
+#include "../token.h"
+#include "../tokentypes.h"
+#include "trees.h"
+#include <iostream>
+#include <memory>
+#include <optional>
+
+int main(int argc, char* argv[]) {
+    using Expr = Expression<std::string>;
+    using Binary = Binary<std::string>;
+    using Unary = Unary<std::string>;
+    using Literal = Literal<std::string>;
+    using Grouping = Grouping<std::string>;
+
+    std::unique_ptr<Expr> expr{new Binary{
+        new Unary{Token{TokenType::_minus, "-", std::nullopt, 1}, new Literal{123.0}},
+        Token{TokenType::_star, "*", std::nullopt, 1}, new Grouping{new Literal{45.67}}}};
+
+    std::unique_ptr<Expr> expr1{new Literal{123.0}};
+
+    std::unique_ptr<Expr> expr2{
+        new Unary{Token{TokenType::_minus, "-", std::nullopt, 1}, new Literal{123.0}}};
+
+    AstPrinter astPrinter{};
+    std::cout << astPrinter.print(expr.get());
+
+    std::cout << std::endl;
+
+    return 0;
+}

@@ -177,7 +177,9 @@ inline std::ostream& operator<<(std::ostream& out, const TokenType& token) {
     case _while:
         out << "while";
         break;
-
+    case _var:
+        out << "var";
+        break;
     case _eof:
         out << "eof";
         break;

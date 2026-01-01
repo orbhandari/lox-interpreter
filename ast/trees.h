@@ -3,13 +3,14 @@
 
 #include "../token.h"
 #include <initializer_list>
-#include <ios>
 #include <memory>
 #include <string>
 
 /*
  * Each tree is templated to match the visitor that visits it, and C++ does not support templated
  * virtual functions either.
+ *
+ * Members are chosen to use pointers to utilize dynamic dispatching, but this might prove to be slow.
  */
 
 template <typename R>

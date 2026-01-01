@@ -1,7 +1,8 @@
 #ifndef TREES_H
 #define TREES_H
 
-#include "../token.h"
+#include "../typing/token.h"
+#include "../typing/tokentypes.h"
 #include <initializer_list>
 #include <memory>
 #include <string>

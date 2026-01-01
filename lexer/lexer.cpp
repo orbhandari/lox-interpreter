@@ -1,6 +1,4 @@
 #include "lexer.h"
-#include "tokentypes.h"
-#include "types.h"
 #include <cctype>
 #include <optional>
 #include <stdexcept>

@@ -1,6 +1,6 @@
-#include "error.h"
-#include "token.h"
-#include "tokentypes.h"
+#include "../error.h"
+#include "../typing/token.h"
+#include "../typing/tokentypes.h"
 #include <string>
 #include <unordered_map>
 #include <vector>

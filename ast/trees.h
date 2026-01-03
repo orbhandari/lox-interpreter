@@ -11,7 +11,7 @@
  * virtual functions either.
  *
  * Members are chosen to use pointers to utilize dynamic dispatching, but this might prove to be
- * slow.
+ * slow. Perhaps we may consider references?
  */
 
 template <typename R>
@@ -23,7 +23,7 @@ class Expression {
     Expression(const Expression&) = delete; // this also means no compiler supplied move
     Expression& operator=(const Expression&) = delete;
 
-    Expression(Expression&&) = default;
+    Expression(Expression&&) noexcept = default;
     Expression& operator=(Expression&&) = default;
 
     virtual ~Expression() = default;
@@ -44,7 +44,7 @@ class Binary final : public Expression<R> {
     Binary(const Binary&) = delete;
     Binary& operator=(const Binary&) = delete;
 
-    Binary(Binary&&) = default;
+    Binary(Binary&&) noexcept = default;
     Binary& operator=(Binary&&) = default;
 
     R accept(const Visitor<R>& visitor) const override {
@@ -64,7 +64,7 @@ class Grouping final : public Expression<R> {
     Grouping(const Grouping&) = delete;
     Grouping& operator=(const Grouping&) = delete;
 
-    Grouping(Grouping&&) = default;
+    Grouping(Grouping&&) noexcept = default;
     Grouping& operator=(Grouping&&) = default;
 
     R accept(const Visitor<R>& visitor) const override {
@@ -82,7 +82,7 @@ class Literal final : public Expression<R> {
     Literal(const Literal&) = delete;
     Literal& operator=(const Literal&) = delete;
 
-    Literal(Literal&&) = default;
+    Literal(Literal&&) noexcept = default;
     Literal& operator=(Literal&&) = default;
 
     R accept(const Visitor<R>& visitor) const override {
@@ -105,7 +105,7 @@ class Unary : public Expression<R> {
     Unary(const Unary&) = delete;
     Unary& operator=(const Unary&) = delete;
 
-    Unary(Unary&&) = default;
+    Unary(Unary&&) noexcept = default;
     Unary& operator=(Unary&&) = default;
 
     std::unique_ptr<Expression<R>> m_right_operand;
@@ -120,8 +120,12 @@ template <typename R>
 class Visitor {
   public:
     Visitor() = default;
+
     Visitor(const Visitor&) = delete;
-    Visitor(Visitor&&) = default;
+    Visitor& operator=(const Visitor&) = delete;
+
+    Visitor(Visitor&&) noexcept = default;
+    Visitor& operator=(Visitor&&) = default;
 
     virtual ~Visitor() = default;
 
@@ -137,8 +141,12 @@ class Visitor {
 class AstPrinter : Visitor<std::string> {
   public:
     AstPrinter() = default;
+
     AstPrinter(const AstPrinter&) = delete;
-    AstPrinter(AstPrinter&&) = default;
+    AstPrinter& operator=(const AstPrinter&) = delete;
+
+    AstPrinter(AstPrinter&&) noexcept = default;
+    AstPrinter& operator=(AstPrinter&&) = default;
 
     std::string print(Expression<std::string>* expr) const {
         return expr->accept(*this);

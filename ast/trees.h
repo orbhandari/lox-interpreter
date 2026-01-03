@@ -2,7 +2,6 @@
 #define TREES_H
 
 #include "../typing/token.h"
-#include "../typing/tokentypes.h"
 #include <initializer_list>
 #include <memory>
 #include <string>
@@ -11,7 +10,8 @@
  * Each tree is templated to match the visitor that visits it, and C++ does not support templated
  * virtual functions either.
  *
- * Members are chosen to use pointers to utilize dynamic dispatching, but this might prove to be slow.
+ * Members are chosen to use pointers to utilize dynamic dispatching, but this might prove to be
+ * slow.
  */
 
 template <typename R>
@@ -20,7 +20,10 @@ class Visitor;
 template <typename R>
 class Expression {
   public:
+    Expression(const Expression<R>&) = delete; // this also means no compiler supplied move
+    Expression(Expression<R>&&) = default;
     virtual ~Expression() = default;
+
     virtual R accept(const Visitor<R>& visitor) const = 0;
 };
 
@@ -28,11 +31,14 @@ class Expression {
  * Expression trees.
  */
 template <typename R>
-class Binary : public Expression<R> {
+class Binary final : public Expression<R> {
   public:
     // op stands for operator, as operator is a reserverd keyword
     Binary(Expression<R>* left_operand, Token op, Expression<R>* right_operand)
         : m_left_operand{left_operand}, m_right_operand{right_operand}, m_operator{op} {}
+
+    Binary(const Binary&) = delete;
+    Binary(const Binary&&) = default;
 
     R accept(const Visitor<R>& visitor) const override {
         return visitor.visit(this);
@@ -44,9 +50,12 @@ class Binary : public Expression<R> {
 };
 
 template <typename R>
-class Grouping : public Expression<R> {
+class Grouping final : public Expression<R> {
   public:
     Grouping(Expression<R>* expression) : m_expression{expression} {};
+    Grouping(const Grouping&) = delete;
+    Grouping(Grouping&&) = default;
+
     R accept(const Visitor<R>& visitor) const override {
         return visitor.visit(this);
     };
@@ -55,9 +64,12 @@ class Grouping : public Expression<R> {
 };
 
 template <typename R>
-class Literal : public Expression<R> {
+class Literal final : public Expression<R> {
   public:
     Literal(Type literal) : m_literal{literal} {}
+    Literal(const Literal&) = delete;
+    Literal(Literal&&) = default;
+
     R accept(const Visitor<R>& visitor) const override {
         return visitor.visit(this);
     };
@@ -75,6 +87,9 @@ class Unary : public Expression<R> {
         return visitor.visit(this);
     };
 
+    Unary(const Unary&) = delete;
+    Unary(const Unary&&) = default;
+
     std::unique_ptr<Expression<R>> m_right_operand;
     Token m_operator;
 };
@@ -86,6 +101,10 @@ class Unary : public Expression<R> {
 template <typename R>
 class Visitor {
   public:
+    Visitor() = default;
+    Visitor(const Visitor&) = delete;
+    Visitor(Visitor&&) = default;
+
     virtual ~Visitor() = default;
 
     virtual R visit(const Binary<R>* expr) const = 0;
@@ -99,6 +118,10 @@ class Visitor {
  */
 class AstPrinter : Visitor<std::string> {
   public:
+    AstPrinter() = default;
+    AstPrinter(const AstPrinter&) = delete;
+    AstPrinter(AstPrinter&&) = default;
+
     std::string print(Expression<std::string>* expr) const {
         return expr->accept(*this);
     }

@@ -20,8 +20,12 @@ class Visitor;
 template <typename R>
 class Expression {
   public:
-    Expression(const Expression<R>&) = delete; // this also means no compiler supplied move
-    Expression(Expression<R>&&) = default;
+    Expression(const Expression&) = delete; // this also means no compiler supplied move
+    Expression& operator=(const Expression&) = delete;
+
+    Expression(Expression&&) = default;
+    Expression& operator=(Expression&&) = default;
+
     virtual ~Expression() = default;
 
     virtual R accept(const Visitor<R>& visitor) const = 0;
@@ -38,7 +42,10 @@ class Binary final : public Expression<R> {
         : m_left_operand{left_operand}, m_right_operand{right_operand}, m_operator{op} {}
 
     Binary(const Binary&) = delete;
-    Binary(const Binary&&) = default;
+    Binary& operator=(const Binary&) = delete;
+
+    Binary(Binary&&) = default;
+    Binary& operator=(Binary&&) = default;
 
     R accept(const Visitor<R>& visitor) const override {
         return visitor.visit(this);
@@ -53,8 +60,12 @@ template <typename R>
 class Grouping final : public Expression<R> {
   public:
     Grouping(Expression<R>* expression) : m_expression{expression} {};
+
     Grouping(const Grouping&) = delete;
+    Grouping& operator=(const Grouping&) = delete;
+
     Grouping(Grouping&&) = default;
+    Grouping& operator=(Grouping&&) = default;
 
     R accept(const Visitor<R>& visitor) const override {
         return visitor.visit(this);
@@ -67,8 +78,12 @@ template <typename R>
 class Literal final : public Expression<R> {
   public:
     Literal(Type literal) : m_literal{literal} {}
+
     Literal(const Literal&) = delete;
+    Literal& operator=(const Literal&) = delete;
+
     Literal(Literal&&) = default;
+    Literal& operator=(Literal&&) = default;
 
     R accept(const Visitor<R>& visitor) const override {
         return visitor.visit(this);
@@ -88,7 +103,10 @@ class Unary : public Expression<R> {
     };
 
     Unary(const Unary&) = delete;
-    Unary(const Unary&&) = default;
+    Unary& operator=(const Unary&) = delete;
+
+    Unary(Unary&&) = default;
+    Unary& operator=(Unary&&) = default;
 
     std::unique_ptr<Expression<R>> m_right_operand;
     Token m_operator;

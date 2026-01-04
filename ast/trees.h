@@ -23,9 +23,10 @@ class Expression {
     Expression(const Expression&) = delete; // this also means no compiler supplied move
     Expression& operator=(const Expression&) = delete;
 
-    Expression(Expression&&) noexcept = default;
-    Expression& operator=(Expression&&) = default;
+    Expression(Expression&&) noexcept = delete;
+    Expression& operator=(Expression&&) = delete;
 
+    Expression() = default;
     virtual ~Expression() = default;
 
     virtual R accept(const Visitor<R>& visitor) const = 0;
@@ -38,19 +39,32 @@ template <typename R>
 class Binary final : public Expression<R> {
   public:
     // op stands for operator, as operator is a reserverd keyword
-    Binary(Expression<R>* left_operand, Token op, Expression<R>* right_operand)
-        : m_left_operand{left_operand}, m_right_operand{right_operand}, m_operator{op} {}
+    Binary(std::unique_ptr<Expression<R>> left_operand, Token op,
+           std::unique_ptr<Expression<R>> right_operand)
+        : m_left_operand{std::move(left_operand)}, m_right_operand{std::move(right_operand)},
+          m_operator{op} {}
 
     Binary(const Binary&) = delete;
     Binary& operator=(const Binary&) = delete;
 
-    Binary(Binary&&) noexcept = default;
-    Binary& operator=(Binary&&) = default;
+    Binary(Binary&&) noexcept = delete;
+    Binary& operator=(Binary&&) = delete;
 
     R accept(const Visitor<R>& visitor) const override {
-        return visitor.visit(this);
+        return visitor.visit(*this);
     };
 
+    const Expression<R>& left() const {
+        return *m_left_operand;
+    }
+    const Expression<R>& right() const {
+        return *m_right_operand;
+    }
+    const Token& op() const {
+        return m_operator;
+    }
+
+  private:
     std::unique_ptr<Expression<R>> m_left_operand;
     std::unique_ptr<Expression<R>> m_right_operand;
     Token m_operator;
@@ -59,18 +73,23 @@ class Binary final : public Expression<R> {
 template <typename R>
 class Grouping final : public Expression<R> {
   public:
-    Grouping(Expression<R>* expression) : m_expression{expression} {};
+    Grouping(std::unique_ptr<Expression<R>> expression) : m_expression{std::move(expression)} {};
 
     Grouping(const Grouping&) = delete;
     Grouping& operator=(const Grouping&) = delete;
 
-    Grouping(Grouping&&) noexcept = default;
-    Grouping& operator=(Grouping&&) = default;
+    Grouping(Grouping&&) noexcept = delete;
+    Grouping& operator=(Grouping&&) = delete;
 
     R accept(const Visitor<R>& visitor) const override {
-        return visitor.visit(this);
+        return visitor.visit(*this);
     };
 
+    const Expression<R>& expr() const {
+        return *m_expression;
+    }
+
+  private:
     std::unique_ptr<Expression<R>> m_expression;
 };
 
@@ -82,13 +101,18 @@ class Literal final : public Expression<R> {
     Literal(const Literal&) = delete;
     Literal& operator=(const Literal&) = delete;
 
-    Literal(Literal&&) noexcept = default;
-    Literal& operator=(Literal&&) = default;
+    Literal(Literal&&) noexcept = delete;
+    Literal& operator=(Literal&&) = delete;
 
     R accept(const Visitor<R>& visitor) const override {
-        return visitor.visit(this);
+        return visitor.visit(*this);
     };
 
+    Type getLiteral() const {
+        return m_literal;
+    }
+
+  private:
     Type m_literal;
 };
 
@@ -96,18 +120,27 @@ template <typename R>
 class Unary : public Expression<R> {
   public:
     // op stands for operator, as operator is a reserverd keyword
-    Unary(Token op, Expression<R>* right_operand)
-        : m_operator{op}, m_right_operand{right_operand} {};
-    R accept(const Visitor<R>& visitor) const override {
-        return visitor.visit(this);
-    };
+    Unary(Token op, std::unique_ptr<Expression<R>> right_operand)
+        : m_operator{op}, m_right_operand{std::move(right_operand)} {};
 
     Unary(const Unary&) = delete;
     Unary& operator=(const Unary&) = delete;
 
-    Unary(Unary&&) noexcept = default;
-    Unary& operator=(Unary&&) = default;
+    Unary(Unary&&) noexcept = delete;
+    Unary& operator=(Unary&&) = delete;
 
+    R accept(const Visitor<R>& visitor) const override {
+        return visitor.visit(*this);
+    };
+
+    const Expression<R>& right() const {
+        return *m_right_operand;
+    }
+    const Token& op() const {
+        return m_operator;
+    }
+
+  private:
     std::unique_ptr<Expression<R>> m_right_operand;
     Token m_operator;
 };
@@ -124,53 +157,53 @@ class Visitor {
     Visitor(const Visitor&) = delete;
     Visitor& operator=(const Visitor&) = delete;
 
-    Visitor(Visitor&&) noexcept = default;
-    Visitor& operator=(Visitor&&) = default;
+    Visitor(Visitor&&) noexcept = delete;
+    Visitor& operator=(Visitor&&) = delete;
 
     virtual ~Visitor() = default;
 
-    virtual R visit(const Binary<R>* expr) const = 0;
-    virtual R visit(const Grouping<R>* expr) const = 0;
-    virtual R visit(const Literal<R>* expr) const = 0;
-    virtual R visit(const Unary<R>* expr) const = 0;
+    virtual R visit(const Binary<R>& expr) const = 0;
+    virtual R visit(const Grouping<R>& expr) const = 0;
+    virtual R visit(const Literal<R>& expr) const = 0;
+    virtual R visit(const Unary<R>& expr) const = 0;
 };
 
 /*
  * Mainly for debugging how interpreter sees the trees.
  */
-class AstPrinter : Visitor<std::string> {
+class AstPrinter : public Visitor<std::string> {
   public:
     AstPrinter() = default;
 
     AstPrinter(const AstPrinter&) = delete;
     AstPrinter& operator=(const AstPrinter&) = delete;
 
-    AstPrinter(AstPrinter&&) noexcept = default;
-    AstPrinter& operator=(AstPrinter&&) = default;
+    AstPrinter(AstPrinter&&) noexcept = delete;
+    AstPrinter& operator=(AstPrinter&&) = delete;
 
-    std::string print(Expression<std::string>* expr) const {
-        return expr->accept(*this);
+    std::string print(Expression<std::string>& expr) const {
+        return expr.accept(*this);
     }
 
-    std::string visit(const Binary<std::string>* expr) const override {
-        return parenthesize(expr->m_operator.getLexeme(),
-                            {expr->m_left_operand.get(), expr->m_right_operand.get()});
+    std::string visit(const Binary<std::string>& expr) const override {
+        return parenthesize(expr.op().getLexeme(), {expr.left(), expr.right()});
     }
 
-    std::string visit(const Grouping<std::string>* expr) const override {
-        return parenthesize("group", {expr->m_expression.get()});
+    std::string visit(const Grouping<std::string>& expr) const override {
+        return parenthesize("group", {expr.expr()});
     }
 
-    std::string visit(const Literal<std::string>* expr) const override {
-        return toString(expr->m_literal);
+    std::string visit(const Literal<std::string>& expr) const override {
+        return toString(expr.getLiteral());
     }
 
-    std::string visit(const Unary<std::string>* expr) const override {
-        return parenthesize(expr->m_operator.getLexeme(), {expr->m_right_operand.get()});
+    std::string visit(const Unary<std::string>& expr) const override {
+        return parenthesize(expr.op().getLexeme(), {expr.right()});
     }
 
-    std::string parenthesize(std::string_view name,
-                             std::initializer_list<Expression<std::string>* const> exprs) const {
+    std::string parenthesize(
+        std::string_view name,
+        std::initializer_list<std::reference_wrapper<const Expression<std::string>>> exprs) const {
 
         std::string buffer{};
         buffer += "(";
@@ -178,7 +211,7 @@ class AstPrinter : Visitor<std::string> {
 
         for (const auto& expr : exprs) {
             buffer.append(" ");
-            buffer.append(expr->accept(*this));
+            buffer.append(expr.get().accept(*this));
         }
 
         buffer += ")";

@@ -1,0 +1,17 @@
+// Precedence, lowest at the top, highest at the bottom.
+// Instead of left-recursive grammars, we choose to use flat sequence.
+// Some parsing techniques have trouble with left-recursion.
+
+expression -> equality
+
+equality -> comparison ( ( "!=" ) | "==" comparison )* ;
+
+comparison -> term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
+
+term -> factor ( ( "-" | "+" ) factor )* ;
+
+factor -> unary ( ("/" | "*") unary )* ;
+
+unary -> ( "!" | "-" ) unary | primary ;
+
+primary -> NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" ;

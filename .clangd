@@ -1,2 +1,6 @@
 CompileFlags:
-  Add: [-xc++, -std=c++23, -Wall, -Wextra, -Wpedantic]
+  Add: [-xc++, -std=c++23, -Wall, -Wextra, -Wpedantic
+]
+
+HeaderInsertion: IWYU
+

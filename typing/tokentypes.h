@@ -49,6 +49,7 @@ enum class TokenType {
     _true,
     _false,
     _while,
+    _for,
     _var,
 
     _eof,

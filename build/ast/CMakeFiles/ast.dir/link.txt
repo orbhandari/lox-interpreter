@@ -1,2 +1,0 @@
-/usr/sbin/ar qc libast.a CMakeFiles/ast.dir/astPrinter.cpp.o
-/usr/sbin/ranlib libast.a

@@ -1,3 +1,6 @@
+#ifndef LEXER_H
+#define LEXER_H
+
 #include "../error.h"
 #include "../typing/token.h"
 #include "../typing/tokentypes.h"
@@ -35,7 +38,9 @@ class Lexer {
     int m_line{1};
     std::string m_source;
     std::vector<Token> m_tokens;
-    ErrorReporter m_errorReporter;
+    ErrorReporter m_errorReporter{"Lexer"};
 
     static const std::unordered_map<std::string, TokenType> reservedKeywordsMap;
 };
+
+#endif // LEXER_H

@@ -1,3 +1,7 @@
+# Project
+tests
+build
+
 # Usual ignores
 .vscode
 .env

@@ -2,9 +2,7 @@
 #define TREES_H
 
 #include "../typing/token.h"
-#include <initializer_list>
 #include <memory>
-#include <string>
 
 /*
  * Each tree is templated to match the visitor that visits it, and C++ does not support templated
@@ -168,55 +166,4 @@ class Visitor {
     virtual R visit(const Unary<R>& expr) const = 0;
 };
 
-/*
- * Mainly for debugging how interpreter sees the trees.
- */
-class AstPrinter : public Visitor<std::string> {
-  public:
-    AstPrinter() = default;
-
-    AstPrinter(const AstPrinter&) = delete;
-    AstPrinter& operator=(const AstPrinter&) = delete;
-
-    AstPrinter(AstPrinter&&) noexcept = delete;
-    AstPrinter& operator=(AstPrinter&&) = delete;
-
-    std::string print(Expression<std::string>& expr) const {
-        return expr.accept(*this);
-    }
-
-    std::string visit(const Binary<std::string>& expr) const override {
-        return parenthesize(expr.op().getLexeme(), {expr.left(), expr.right()});
-    }
-
-    std::string visit(const Grouping<std::string>& expr) const override {
-        return parenthesize("group", {expr.expr()});
-    }
-
-    std::string visit(const Literal<std::string>& expr) const override {
-        return toString(expr.getLiteral());
-    }
-
-    std::string visit(const Unary<std::string>& expr) const override {
-        return parenthesize(expr.op().getLexeme(), {expr.right()});
-    }
-
-    std::string parenthesize(
-        std::string_view name,
-        std::initializer_list<std::reference_wrapper<const Expression<std::string>>> exprs) const {
-
-        std::string buffer{};
-        buffer += "(";
-        buffer += name;
-
-        for (const auto& expr : exprs) {
-            buffer.append(" ");
-            buffer.append(expr.get().accept(*this));
-        }
-
-        buffer += ")";
-
-        return buffer;
-    }
-};
 #endif // !TREES_H

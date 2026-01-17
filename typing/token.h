@@ -20,6 +20,18 @@ class Token {
         return m_lexeme;
     }
 
+    TokenType getType() const {
+        return m_type;
+    }
+
+    Type getLiteral() const {
+        return m_literal;
+    }
+
+    int getLine() const {
+        return m_line;
+    }
+
     friend std::ostream& operator<<(std::ostream& out, const Token& token) {
         out << token.m_type << " " << token.m_lexeme << " " << token.m_literal;
         return out;

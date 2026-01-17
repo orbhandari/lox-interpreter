@@ -1,6 +1,7 @@
 # Project
 tests
 build
+.cache
 
 # Usual ignores
 .vscode

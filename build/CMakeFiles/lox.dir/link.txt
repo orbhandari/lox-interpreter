@@ -1,0 +1,1 @@
+/usr/sbin/c++ -Wl,--dependency-file=CMakeFiles/lox.dir/link.d CMakeFiles/lox.dir/main.cpp.o -o bin/lox  interpreter/libinterpreter.a lexer/liblexer.a parser/libparser.a ast/libast.a lexer/liblexer.a

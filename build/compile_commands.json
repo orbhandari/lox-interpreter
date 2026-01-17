@@ -1,0 +1,32 @@
+[
+{
+  "directory": "/home/ombhandari/Projects/lox-interpreter/build",
+  "command": "/usr/sbin/c++  -I/home/ombhandari/Projects/lox-interpreter -std=c++23 -o CMakeFiles/lox.dir/main.cpp.o -c /home/ombhandari/Projects/lox-interpreter/main.cpp",
+  "file": "/home/ombhandari/Projects/lox-interpreter/main.cpp",
+  "output": "CMakeFiles/lox.dir/main.cpp.o"
+},
+{
+  "directory": "/home/ombhandari/Projects/lox-interpreter/build/ast",
+  "command": "/usr/sbin/c++  -I/home/ombhandari/Projects/lox-interpreter -std=c++23 -o CMakeFiles/ast.dir/astPrinter.cpp.o -c /home/ombhandari/Projects/lox-interpreter/ast/astPrinter.cpp",
+  "file": "/home/ombhandari/Projects/lox-interpreter/ast/astPrinter.cpp",
+  "output": "ast/CMakeFiles/ast.dir/astPrinter.cpp.o"
+},
+{
+  "directory": "/home/ombhandari/Projects/lox-interpreter/build/interpreter",
+  "command": "/usr/sbin/c++  -I/home/ombhandari/Projects/lox-interpreter -std=c++23 -o CMakeFiles/interpreter.dir/interpretor.cpp.o -c /home/ombhandari/Projects/lox-interpreter/interpreter/interpretor.cpp",
+  "file": "/home/ombhandari/Projects/lox-interpreter/interpreter/interpretor.cpp",
+  "output": "interpreter/CMakeFiles/interpreter.dir/interpretor.cpp.o"
+},
+{
+  "directory": "/home/ombhandari/Projects/lox-interpreter/build/lexer",
+  "command": "/usr/sbin/c++  -I/home/ombhandari/Projects/lox-interpreter -std=c++23 -o CMakeFiles/lexer.dir/lexer.cpp.o -c /home/ombhandari/Projects/lox-interpreter/lexer/lexer.cpp",
+  "file": "/home/ombhandari/Projects/lox-interpreter/lexer/lexer.cpp",
+  "output": "lexer/CMakeFiles/lexer.dir/lexer.cpp.o"
+},
+{
+  "directory": "/home/ombhandari/Projects/lox-interpreter/build/tests",
+  "command": "/usr/sbin/c++  -I/home/ombhandari/Projects/lox-interpreter -std=c++23 -o CMakeFiles/parser_ast_tests.dir/parser_ast_tests.cpp.o -c /home/ombhandari/Projects/lox-interpreter/tests/parser_ast_tests.cpp",
+  "file": "/home/ombhandari/Projects/lox-interpreter/tests/parser_ast_tests.cpp",
+  "output": "tests/CMakeFiles/parser_ast_tests.dir/parser_ast_tests.cpp.o"
+}
+]

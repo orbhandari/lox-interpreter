@@ -1,0 +1,2 @@
+/usr/sbin/ar qc libparser.a
+/usr/sbin/ranlib libparser.a

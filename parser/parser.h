@@ -13,6 +13,7 @@
 
 /*
  * Recursive descent parser.
+ * Concrete implementation are at the bottom of the file. This is required due to templating.
  */
 template <typename R>
 class Parser {

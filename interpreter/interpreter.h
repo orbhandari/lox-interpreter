@@ -1,5 +1,9 @@
 #include "../ast/trees.h"
+#include "typing/types.h"
 
+/*
+ * Tree-walking interpreter.
+ */
 class Interpreter : Visitor<Type> {
   public:
     Interpreter() = default;
@@ -11,8 +15,8 @@ class Interpreter : Visitor<Type> {
     Interpreter& operator=(Interpreter&&) = delete;
 
     ~Interpreter() = default;
-    
-    Type interpret(const Expression<Type>& expr) const;
+
+    Type evaluate(const Expression<Type>& expr) const;
     Type visit(const Binary<Type>& expr) const;
     Type visit(const Grouping<Type>& expr) const;
     Type visit(const Literal<Type>& expr) const;

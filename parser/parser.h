@@ -25,6 +25,12 @@ class Parser {
      * Kicks off the parsing of an AST.
      */
     std::unique_ptr<Expression<R>> parse();
+    bool hadError() {
+        return m_errorReporter.hadError();
+    }
+    bool hadRuntimeError() {
+        return m_errorReporter.hadRuntimeError();
+    }
 
   private:
     struct ParseError;
@@ -67,8 +73,8 @@ template <typename R>
 auto Parser<R>::parse() -> std::unique_ptr<Expression<R>> {
     try {
         return expression();
-    } catch (const ParseError&) {
-        std::println(std::cerr, "Parse error caught at top level parse().");
+    } catch (const ParseError& e) {
+        std::println(std::cerr, "Parse error caught at top level parse(): {}", e.what());
         return nullptr;
     } catch (...) {
         std::println(std::cerr, "Unknown error caught at top level parse().");

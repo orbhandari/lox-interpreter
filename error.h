@@ -4,7 +4,15 @@
 #include "typing/token.h"
 #include "typing/tokentypes.h"
 #include <print>
+#include <stdexcept>
 #include <string_view>
+
+struct LoxRuntimeError : std::runtime_error {
+    Token m_token;
+
+    LoxRuntimeError(Token token, std::string_view message)
+        : std::runtime_error{static_cast<std::string>(message)}, m_token{token} {};
+};
 
 class ErrorReporter {
   public:
@@ -25,8 +33,20 @@ class ErrorReporter {
             report(token.getLine(), " at '" + token.getLexeme() + "'", message);
     }
 
+    void runtimeError(LoxRuntimeError error) {
+        std::cout << error.what() << "\n";
+        std::cout << "[line " << error.m_token.getLine() << "]" << "\n";
+
+        m_hadRuntimeError = true;
+    }
+
+    bool hadError() const { return m_hadError; };
+    bool hadRuntimeError() const { return m_hadRuntimeError; };
+
   private:
     std::string m_name{"???"};
     bool m_hadError{false};
+    bool m_hadRuntimeError{false};
 };
+
 #endif // !ERROR_H

@@ -17,7 +17,7 @@ class AstPrinter : public Visitor<std::string> {
     AstPrinter(AstPrinter&&) noexcept = delete;
     AstPrinter& operator=(AstPrinter&&) = delete;
 
-    std::string print(Expression<std::string>& expr) const;
+    std::string print(const Expression<std::string>& expr) const;
 
     std::string visit(const Binary<std::string>& expr) const override;
     std::string visit(const Grouping<std::string>& expr) const override;

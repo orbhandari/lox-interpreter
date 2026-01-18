@@ -12,6 +12,7 @@ class Lexer {
     using enum TokenType;
 
   public:
+    Lexer() = default;
     Lexer(std::string source);
     Lexer(Lexer&&) = default;
     Lexer(const Lexer&) = default;
@@ -19,6 +20,9 @@ class Lexer {
     Lexer& operator=(const Lexer&) = default;
     ~Lexer() = default;
 
+    auto setSource(std::string source) -> void {
+        m_source = source;
+    }
     auto lexTokens() -> std::vector<Token>;
     auto lexToken() -> void;
     auto isAtEnd() -> bool;
@@ -31,6 +35,9 @@ class Lexer {
     auto match(char expected) -> bool;
     auto peek() -> char;
     auto peekTwice() -> char;
+
+    bool hadError() { return m_errorReporter.hadError(); };
+    bool hadRuntimeError() { return m_errorReporter.hadRuntimeError(); };
 
   private:
     int m_start{0};

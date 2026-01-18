@@ -1,13 +1,18 @@
+#include "./interpreter/interpreter.h"
 #include "./lexer/lexer.h"
+#include "./parser/parser.h"
+#include "typing/types.h"
+#include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <print>
 #include <sstream>
-#include <vector>
 
 void run(std::string);
 void runFile(const std::string& path);
 void runPrompt();
+
+static Interpreter interpreter;
 
 int main(int argc, char* argv[]) {
     if (argc > 2) {
@@ -23,13 +28,19 @@ int main(int argc, char* argv[]) {
 
 void run(std::string source) {
     Lexer lexer{source};
-    std::vector<Token> tokens{lexer.lexTokens()};
+    auto tokens{lexer.lexTokens()};
 
-    for (const auto& token : tokens) {
-        std::cout << token << "\n";
+    Parser<Type> parser{tokens};
+    auto expression{parser.parse()};
+
+    if (lexer.hadError() || parser.hadError()) {
+        return;
     }
+
+    interpreter.interpret(*expression);
 }
 
+// File script mode.
 void runFile(const std::string& path) {
     std::ifstream file{path};
 
@@ -37,8 +48,17 @@ void runFile(const std::string& path) {
     buffer << file.rdbuf();
 
     run(buffer.str());
+
+    if (interpreter.hadError()) {
+        std::exit(EXIT_FAILURE);
+    }
+
+    if (interpreter.hadRuntimeError()) {
+        std::exit(EXIT_FAILURE);
+    }
 }
 
+// REPL mode.
 void runPrompt() {
     std::string line{};
     while (true) {

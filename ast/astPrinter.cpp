@@ -1,6 +1,6 @@
 #include "astPrinter.h"
 
-std::string AstPrinter::print(Expression<std::string>& expr) const {
+std::string AstPrinter::print(const Expression<std::string>& expr) const {
     return expr.accept(*this);
 }
 

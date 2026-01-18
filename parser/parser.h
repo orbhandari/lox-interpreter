@@ -4,7 +4,6 @@
 #include "../ast/trees.h"
 #include "../error.h"
 #include "../typing/token.h"
-#include "parser.h"
 #include <cassert>
 #include <initializer_list>
 #include <iterator>

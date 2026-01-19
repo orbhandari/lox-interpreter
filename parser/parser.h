@@ -1,9 +1,9 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include "../ast/trees.h"
-#include "../error.h"
-#include "../typing/token.h"
+#include "ast/trees.h"
+#include "error/error.h"
+#include "typing/token.h"
 #include <cassert>
 #include <initializer_list>
 #include <iterator>
@@ -24,7 +24,7 @@ class Parser {
     /*
      * Kicks off the parsing of an AST.
      */
-    std::unique_ptr<Expression<R>> parse();
+    std::unique_ptr<Expression::Expression<R>> parse();
     bool hadError() {
         return m_errorReporter.hadError();
     }
@@ -38,13 +38,13 @@ class Parser {
     /*
      * Recursive functions to consume.
      */
-    std::unique_ptr<Expression<R>> expression();
-    std::unique_ptr<Expression<R>> equality();
-    std::unique_ptr<Expression<R>> comparison();
-    std::unique_ptr<Expression<R>> term();
-    std::unique_ptr<Expression<R>> factor();
-    std::unique_ptr<Expression<R>> unary();
-    std::unique_ptr<Expression<R>> primary();
+    std::unique_ptr<Expression::Expression<R>> expression();
+    std::unique_ptr<Expression::Expression<R>> equality();
+    std::unique_ptr<Expression::Expression<R>> comparison();
+    std::unique_ptr<Expression::Expression<R>> term();
+    std::unique_ptr<Expression::Expression<R>> factor();
+    std::unique_ptr<Expression::Expression<R>> unary();
+    std::unique_ptr<Expression::Expression<R>> primary();
 
     /*
      * Helper functions to perform parsing.
@@ -70,108 +70,107 @@ class Parser {
 };
 
 template <typename R>
-auto Parser<R>::parse() -> std::unique_ptr<Expression<R>> {
+auto Parser<R>::parse() -> std::unique_ptr<Expression::Expression<R>> {
     try {
         return expression();
     } catch (const ParseError& e) {
         std::println(std::cerr, "Parse error caught at top level parse(): {}", e.what());
         return nullptr;
-    } catch (...) {
-        std::println(std::cerr, "Unknown error caught at top level parse().");
+    } catch (const std::exception& e) {
+        std::println(std::cerr, "Unknown error caught at top level parse(): {}", e.what());
         return nullptr;
     }
 }
 
 template <typename R>
-auto Parser<R>::expression() -> std::unique_ptr<Expression<R>> {
-    return equality();
+auto Parser<R>::expression() -> std::unique_ptr<Expression::Expression<R>> {
+    return this->equality();
 }
-
 template <typename R>
-auto Parser<R>::equality() -> std::unique_ptr<Expression<R>> {
-    auto expr = comparison();
+auto Parser<R>::equality() -> std::unique_ptr<Expression::Expression<R>> {
+    auto expr = this->comparison();
 
-    while (match({TokenType::_bang_equal, TokenType::_equal_equal})) {
-        Token oper = previous();
-        auto right = comparison();
-        expr = std::make_unique<Binary<R>>(std::move(expr), oper, std::move(right));
+    while (this->match({TokenType::_bang_equal, TokenType::_equal_equal})) {
+        Token oper = this->previous();
+        auto right = this->comparison();
+        expr = std::make_unique<Expression::Binary<R>>(std::move(expr), oper, std::move(right));
     }
 
     return expr;
 }
 
 template <typename R>
-auto Parser<R>::comparison() -> std::unique_ptr<Expression<R>> {
-    auto expr = term();
+auto Parser<R>::comparison() -> std::unique_ptr<Expression::Expression<R>> {
+    auto expr = this->term();
 
-    while (match({TokenType::_greater, TokenType::_greater_equal, TokenType::_less,
-                  TokenType::_less_equal})) {
-        Token oper = previous();
-        auto right = term();
-        expr = std::make_unique<Binary<R>>(std::move(expr), oper, std::move(right));
+    while (this->match({TokenType::_greater, TokenType::_greater_equal, TokenType::_less,
+                        TokenType::_less_equal})) {
+        Token oper = this->previous();
+        auto right = this->term();
+        expr = std::make_unique<Expression::Binary<R>>(std::move(expr), oper, std::move(right));
     }
 
     return expr;
 }
 
 template <typename R>
-auto Parser<R>::term() -> std::unique_ptr<Expression<R>> {
-    auto expr = factor();
+auto Parser<R>::term() -> std::unique_ptr<Expression::Expression<R>> {
+    auto expr = this->factor();
 
-    while (match({TokenType::_minus, TokenType::_plus})) {
-        Token oper = previous();
-        auto right = factor();
-        expr = std::make_unique<Binary<R>>(std::move(expr), oper, std::move(right));
+    while (this->match({TokenType::_minus, TokenType::_plus})) {
+        Token oper = this->previous();
+        auto right = this->factor();
+        expr = std::make_unique<Expression::Binary<R>>(std::move(expr), oper, std::move(right));
     }
 
     return expr;
 }
 
 template <typename R>
-auto Parser<R>::factor() -> std::unique_ptr<Expression<R>> {
-    auto expr = unary();
+auto Parser<R>::factor() -> std::unique_ptr<Expression::Expression<R>> {
+    auto expr = this->unary();
 
-    while (match({TokenType::_slash, TokenType::_star})) {
-        Token oper = previous();
-        auto right = unary();
-        expr = std::make_unique<Binary<R>>(std::move(expr), oper, std::move(right));
+    while (this->match({TokenType::_slash, TokenType::_star})) {
+        Token oper = this->previous();
+        auto right = this->unary();
+        expr = std::make_unique<Expression::Binary<R>>(std::move(expr), oper, std::move(right));
     }
 
     return expr;
 }
 
 template <typename R>
-auto Parser<R>::unary() -> std::unique_ptr<Expression<R>> {
-    if (match({TokenType::_minus, TokenType::_bang})) {
-        Token oper = previous();
-        auto right = unary();
-        return std::make_unique<Unary<R>>(oper, std::move(right));
+auto Parser<R>::unary() -> std::unique_ptr<Expression::Expression<R>> {
+    if (this->match({TokenType::_minus, TokenType::_bang})) {
+        Token oper = this->previous();
+        auto right = this->unary();
+        return std::make_unique<Expression::Unary<R>>(oper, std::move(right));
     }
 
-    return primary();
+    return this->primary();
 }
 
 template <typename R>
-auto Parser<R>::primary() -> std::unique_ptr<Expression<R>> {
-    if (match({TokenType::_true})) {
-        return std::make_unique<Literal<R>>(true);
+auto Parser<R>::primary() -> std::unique_ptr<Expression::Expression<R>> {
+    if (this->match({TokenType::_true})) {
+        return std::make_unique<Expression::Literal<R>>(true);
     }
-    if (match({TokenType::_false})) {
-        return std::make_unique<Literal<R>>(false);
+    if (this->match({TokenType::_false})) {
+        return std::make_unique<Expression::Literal<R>>(false);
     }
-    if (match({TokenType::_nil})) {
-        return std::make_unique<Literal<R>>(std::nullopt);
+    if (this->match({TokenType::_nil})) {
+        return std::make_unique<Expression::Literal<R>>(std::nullopt);
     }
-    if (match({TokenType::_number, TokenType::_string})) {
-        return std::make_unique<Literal<R>>(previous().getLiteral());
+    if (this->match({TokenType::_number, TokenType::_string})) {
+        return std::make_unique<Expression::Literal<R>>(this->previous().getLiteral());
     }
-    if (match({TokenType::_left_paren})) {
-        auto expr = expression();
-        consume(TokenType::_right_paren, "Expect ')' after expression.");
-        return std::make_unique<Grouping<R>>(std::move(expr));
+    if (this->match({TokenType::_left_paren})) {
+        auto expr = this->expression();
+        this->consume(TokenType::_right_paren, "Expect ')' after expression.");
+        return std::make_unique<Expression::Grouping<R>>(std::move(expr));
     }
 
-    throw error(peek(), "Expected expression.");
+    throw this->error(this->peek(), "Expected expression.");
 }
 
 // Helper functions

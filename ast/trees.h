@@ -12,6 +12,8 @@
  * slow. Perhaps we may consider references?
  */
 
+namespace Expression {
+
 template <typename R>
 class Visitor;
 
@@ -165,5 +167,7 @@ class Visitor {
     virtual R visit(const Literal<R>& expr) const = 0;
     virtual R visit(const Unary<R>& expr) const = 0;
 };
+
+} // namespace Expression
 
 #endif // !TREES_H

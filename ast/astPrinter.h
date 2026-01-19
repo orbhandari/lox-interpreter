@@ -6,8 +6,10 @@
 #include <string>
 #include <string_view>
 
-// Mainly for debugging how the interpreter sees the trees.
-class AstPrinter : public Visitor<std::string> {
+/*
+ * Mainly for debugging how the interpreter sees the trees.
+ */
+class AstPrinter : public Expression::Visitor<std::string> {
   public:
     AstPrinter() = default;
 
@@ -17,17 +19,18 @@ class AstPrinter : public Visitor<std::string> {
     AstPrinter(AstPrinter&&) noexcept = delete;
     AstPrinter& operator=(AstPrinter&&) = delete;
 
-    std::string print(const Expression<std::string>& expr) const;
+    std::string print(const Expression::Expression<std::string>& expr) const;
 
-    std::string visit(const Binary<std::string>& expr) const override;
-    std::string visit(const Grouping<std::string>& expr) const override;
-    std::string visit(const Literal<std::string>& expr) const override;
-    std::string visit(const Unary<std::string>& expr) const override;
+    std::string visit(const Expression::Binary<std::string>& expr) const override;
+    std::string visit(const Expression::Grouping<std::string>& expr) const override;
+    std::string visit(const Expression::Literal<std::string>& expr) const override;
+    std::string visit(const Expression::Unary<std::string>& expr) const override;
 
   private:
     std::string parenthesize(
         std::string_view name,
-        std::initializer_list<std::reference_wrapper<const Expression<std::string>>> exprs) const;
+        std::initializer_list<std::reference_wrapper<const Expression::Expression<std::string>>>
+            exprs) const;
 };
 
 #endif // AST_PRINTER_H

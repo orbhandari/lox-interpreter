@@ -1,31 +1,35 @@
-#include "error.h"
+#include "error/error.h"
 #include "interpreter.h"
 #include "typing/tokentypes.h"
 #include "typing/types.h"
+#include <exception>
+#include <print>
 #include <variant>
 
-void Interpreter::interpret(const Expression<Type>& expression) {
+void Interpreter::interpret(const Expression::Expression<Type>& expression) {
     try {
         Type value{evaluate(expression)};
         std::cout << value << std::endl;
-
     } catch (const LoxRuntimeError& e) {
+        std::println(std::cerr, "Lox runtime error caught at top level interpret(): {}", e.what());
         m_errorReporter.runtimeError(e);
+    } catch (const std::exception& e) {
+        std::println(std::cerr, "Unknown error caught at top level interpret(): {}", e.what());
     }
 }
 
-Type Interpreter::evaluate(const Expression<Type>& expr) const {
+Type Interpreter::evaluate(const Expression::Expression<Type>& expr) const {
     return expr.accept(*this);
 }
-
-Type Interpreter::visit(const Binary<Type>& expr) const {
+Type Interpreter::visit(const Expression::Binary<Type>& expr) const {
 
     auto left{evaluate(expr.left())};
     auto right{evaluate(expr.right())};
 
     switch (expr.op().getType()) {
     // TODO: Handle null optionals rather than .value.
-    // TODO: What if std::get fails? i.e. wrong variant?
+    // TODO: What if std::get fails? i.e. wrong variant? Right now it throws bad optional access, as
+    // per C++ rules.
     case TokenType::_plus:
         // TODO: Clean this up, and perhaps support boolean additions?
         if (std::holds_alternative<Number>(left.value()) &&
@@ -81,15 +85,15 @@ Type Interpreter::visit(const Binary<Type>& expr) const {
     return std::nullopt;
 }
 
-Type Interpreter::visit(const Grouping<Type>& expr) const {
+Type Interpreter::visit(const Expression::Grouping<Type>& expr) const {
     return evaluate(expr.expr());
 }
 
-Type Interpreter::visit(const Literal<Type>& expr) const {
+Type Interpreter::visit(const Expression::Literal<Type>& expr) const {
     return expr.getLiteral();
 }
 
-Type Interpreter::visit(const Unary<Type>& expr) const {
+Type Interpreter::visit(const Expression::Unary<Type>& expr) const {
 
     auto right{evaluate(expr.right())};
 

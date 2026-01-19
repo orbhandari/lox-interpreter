@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <string_view>
 
-struct LoxRuntimeError : std::runtime_error {
+struct LoxRuntimeError : public std::runtime_error {
     Token m_token;
 
     LoxRuntimeError(Token token, std::string_view message)
@@ -40,8 +40,12 @@ class ErrorReporter {
         m_hadRuntimeError = true;
     }
 
-    bool hadError() const { return m_hadError; };
-    bool hadRuntimeError() const { return m_hadRuntimeError; };
+    bool hadError() const {
+        return m_hadError;
+    };
+    bool hadRuntimeError() const {
+        return m_hadRuntimeError;
+    };
 
   private:
     std::string m_name{"???"};

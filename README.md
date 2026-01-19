@@ -13,3 +13,4 @@ wip
 - Add error production to handle binary operations without a left operand
 - Reorganize repo structure to be more conventional, perhaps with `src` and `include` directories
 - Add `GoogleTest` framework for structured test cases
+- Support binary operation on Number + string. The resulting operation should be a concatenated string.

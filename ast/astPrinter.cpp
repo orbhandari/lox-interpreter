@@ -1,28 +1,29 @@
 #include "astPrinter.h"
 
-std::string AstPrinter::print(const Expression<std::string>& expr) const {
+std::string AstPrinter::print(const Expression::Expression<std::string>& expr) const {
     return expr.accept(*this);
 }
 
-std::string AstPrinter::visit(const Binary<std::string>& expr) const {
+std::string AstPrinter::visit(const Expression::Binary<std::string>& expr) const {
     return parenthesize(expr.op().getLexeme(), {expr.left(), expr.right()});
 }
 
-std::string AstPrinter::visit(const Grouping<std::string>& expr) const {
+std::string AstPrinter::visit(const Expression::Grouping<std::string>& expr) const {
     return parenthesize("group", {expr.expr()});
 }
 
-std::string AstPrinter::visit(const Literal<std::string>& expr) const {
+std::string AstPrinter::visit(const Expression::Literal<std::string>& expr) const {
     return toString(expr.getLiteral());
 }
 
-std::string AstPrinter::visit(const Unary<std::string>& expr) const {
+std::string AstPrinter::visit(const Expression::Unary<std::string>& expr) const {
     return parenthesize(expr.op().getLexeme(), {expr.right()});
 }
 
 std::string AstPrinter::parenthesize(
     std::string_view name,
-    std::initializer_list<std::reference_wrapper<const Expression<std::string>>> exprs) const {
+    std::initializer_list<std::reference_wrapper<const Expression::Expression<std::string>>> exprs)
+    const {
 
     std::string buffer{};
 

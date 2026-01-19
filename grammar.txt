@@ -1,3 +1,11 @@
+program -> statement* _eof ;
+
+statement -> exprStmt | printStmt ;
+
+exprStmt -> expression ";" ;
+
+printStmt -> "print" expression ;
+
 // Precedence, lowest at the top, highest at the bottom.
 // Instead of left-recursive grammars, we choose to use flat sequence.
 // Some parsing techniques have trouble with left-recursion.

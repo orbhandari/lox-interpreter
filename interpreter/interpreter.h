@@ -1,11 +1,11 @@
-#include "../ast/trees.h"
-#include "error.h"
+#include "ast/trees.h"
+#include "error/error.h"
 #include "typing/types.h"
 
 /*
  * Tree-walking interpreter.
  */
-class Interpreter : Visitor<Type> {
+class Interpreter : public Expression::Visitor<Type> {
   public:
     Interpreter() = default;
 
@@ -17,12 +17,12 @@ class Interpreter : Visitor<Type> {
 
     ~Interpreter() = default;
 
-    void interpret(const Expression<Type>& expression) ;
-    Type evaluate(const Expression<Type>& expr) const;
-    Type visit(const Binary<Type>& expr) const;
-    Type visit(const Grouping<Type>& expr) const;
-    Type visit(const Literal<Type>& expr) const;
-    Type visit(const Unary<Type>& expr) const;
+    void interpret(const Expression::Expression<Type>& expression);
+    Type evaluate(const Expression::Expression<Type>& expr) const;
+    Type visit(const Expression::Binary<Type>& expr) const;
+    Type visit(const Expression::Grouping<Type>& expr) const;
+    Type visit(const Expression::Literal<Type>& expr) const;
+    Type visit(const Expression::Unary<Type>& expr) const;
     void checkNumberOperand(Token opertor, Type operand) const;
     void checkNumberOperands(Token opertor, Type leftOperand, Type rightOperand) const;
 

@@ -1,9 +1,9 @@
 #ifndef LEXER_H
 #define LEXER_H
 
-#include "../error.h"
-#include "../typing/token.h"
-#include "../typing/tokentypes.h"
+#include "error/error.h"
+#include "typing/token.h"
+#include "typing/tokentypes.h"
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -36,8 +36,12 @@ class Lexer {
     auto peek() -> char;
     auto peekTwice() -> char;
 
-    bool hadError() { return m_errorReporter.hadError(); };
-    bool hadRuntimeError() { return m_errorReporter.hadRuntimeError(); };
+    bool hadError() {
+        return m_errorReporter.hadError();
+    };
+    bool hadRuntimeError() {
+        return m_errorReporter.hadRuntimeError();
+    };
 
   private:
     int m_start{0};

@@ -1,5 +1,5 @@
-#ifndef TREES_H
-#define TREES_H
+#ifndef EXPRESSION_TREES_H
+#define EXPRESSION_TREES_H
 
 #include "../typing/token.h"
 #include <memory>
@@ -7,9 +7,6 @@
 /*
  * Each tree is templated to match the visitor that visits it, and C++ does not support templated
  * virtual functions either.
- *
- * Members are chosen to use pointers to utilize dynamic dispatching, but this might prove to be
- * slow. Perhaps we may consider references?
  */
 
 namespace Expression {
@@ -170,4 +167,4 @@ class Visitor {
 
 } // namespace Expression
 
-#endif // !TREES_H
+#endif // EXPRESSION_TREES_H

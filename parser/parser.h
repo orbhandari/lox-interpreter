@@ -1,7 +1,7 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include "ast/trees.h"
+#include "ast/expressionTrees.h"
 #include "error/error.h"
 #include "typing/token.h"
 #include <cassert>

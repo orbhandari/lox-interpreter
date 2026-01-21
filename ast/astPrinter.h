@@ -1,13 +1,13 @@
 #ifndef AST_PRINTER_H
 #define AST_PRINTER_H
 
-#include "trees.h"
+#include "expressionTrees.h"
 #include <initializer_list>
 #include <string>
 #include <string_view>
 
 /*
- * Mainly for debugging how the interpreter sees the trees.
+ * Mainly for debugging how the interpreter sees the expression trees.
  */
 class AstPrinter : public Expression::Visitor<std::string> {
   public:
